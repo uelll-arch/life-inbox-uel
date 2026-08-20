@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Life Inbox uel</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- LAYAR PIN -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <h2 id="lock-title">Life Inbox</h2>
+    <!-- Teks status di bawah ini akan berubah otomatis lewat JS -->
+    <p id="lock-status">Masukkan PIN untuk Masuk</p>
+    
+    <div class="pin-container">
+      <input type="password" maxlength="1" class="pin-input" inputmode="numeric" pattern="[0-9]*" autofocus />
+      <input type="password" maxlength="1" class="pin-input" inputmode="numeric" pattern="[0-9]*" />
+      <input type="password" maxlength="1" class="pin-input" inputmode="numeric" pattern="[0-9]*" />
+      <input type="password" maxlength="1" class="pin-input" inputmode="numeric" pattern="[0-9]*" />
+    </div>
+    
+    <p id="error-message" style="color: #ff4d4d; margin-top: 15px; display: none;"></p>
+    
+    <!-- Tombol Tambahan (Opsional) untuk Reset PIN dari dalam aplikasi nanti -->
+    <button id="btn-reset-pin" style="margin-top: 20px; display: none; background: none; border: none; color: #7000ff; cursor: pointer;">Ganti PIN</button>
+  </div>
+</div>
+
+<!-- HALAMAN UTAMA ANDA -->
+<div id="main-app" style="display: none;">
+  <!-- Seluruh kode tampilan Life Inbox Anda -->
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-logo">✦</div>
+
+        <div>
+          <h1>Life Inbox</h1>
+          <p>Your second brain</p>
+        </div>
+      </div>
+
+
+      <nav class="navigation">
+
+        <button class="nav-item active" data-page="inbox">
+          <span>📥</span>
+          <span>Inbox</span>
+          <strong id="inboxCount">0</strong>
+        </button>
+
+        <button class="nav-item" data-page="today">
+          <span>🔥</span>
+          <span>Hari Ini</span>
+        </button>
+
+        <button class="nav-item" data-page="upcoming">
+          <span>📅</span>
+          <span>Terjadwal</span>
+        </button>
+
+        <button class="nav-item" data-page="ideas">
+          <span>💡</span>
+          <span>Ide</span>
+        </button>
+
+        <button class="nav-item" data-page="completed">
+          <span>✓</span>
+          <span>Selesai</span>
+        </button>
+
+      </nav>
+
+
+      <div class="sidebar-bottom">
+
+        <button id="themeButton" class="sidebar-button">
+          🌙
+          <span>Dark mode</span>
+        </button>
+
+        <button id="clearCompleted" class="sidebar-button danger">
+          🗑
+          <span>Bersihkan selesai</span>
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- TOP BAR -->
+      <header class="topbar">
+
+        <div>
+
+          <p id="currentDate" class="date"></p>
+
+          <h2 id="pageTitle">
+            Inbox
+          </h2>
+
+        </div>
+
+
+        <button id="quickAddButton" class="quick-add">
+
+          <span>＋</span>
+
+          <span>Quick Add</span>
+
+          <kbd>Ctrl + Space</kbd>
+
+        </button>
+
+      </header>
+
+
+
+      <!-- CAPTURE -->
+      <section class="capture">
+
+        <div class="capture-icon">
+          ✦
+        </div>
+
+        <div class="capture-content">
+
+          <textarea
+            id="noteInput"
+            placeholder="Apa yang mau lo titipin ke diri lo sendiri?"
+          ></textarea>
+
+
+          <div class="capture-bottom">
+
+            <div class="capture-options">
+
+              <select id="categoryInput">
+
+                <option value="general">
+                  📌 Umum
+                </option>
+
+                <option value="college">
+                  📚 Kuliah
+                </option>
+
+                <option value="shopping">
+                  🛒 Belanja
+                </option>
+
+                <option value="idea">
+                  💡 Ide
+                </option>
+
+                <option value="personal">
+                  🧍 Personal
+                </option>
+
+              </select>
+
+
+              <select id="priorityInput">
+
+                <option value="normal">
+                  Prioritas Normal
+                </option>
+
+                <option value="high">
+                  🔥 Tinggi
+                </option>
+
+                <option value="low">
+                  Rendah
+                </option>
+
+              </select>
+
+
+              <input
+                type="datetime-local"
+                id="reminderInput"
+              >
+
+            </div>
+
+
+            <button id="saveButton" class="save-button">
+              Simpan
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- SEARCH -->
+      <section class="toolbar">
+
+        <div class="search-box">
+
+          <span>⌕</span>
+
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Cari sesuatu..."
+          >
+
+        </div>
+
+
+        <select id="filterInput">
+
+          <option value="all">
+            Semua
+          </option>
+
+          <option value="general">
+            Umum
+          </option>
+
+          <option value="college">
+            Kuliah
+          </option>
+
+          <option value="shopping">
+            Belanja
+          </option>
+
+          <option value="idea">
+            Ide
+          </option>
+
+          <option value="personal">
+            Personal
+          </option>
+
+        </select>
+
+      </section>
+
+
+
+      <!-- SUMMARY -->
+      <section class="summary">
+
+        <div class="summary-card">
+
+          <span class="summary-icon purple">
+            📥
+          </span>
+
+          <div>
+            <small>Inbox</small>
+            <strong id="summaryInbox">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <span class="summary-icon orange">
+            🔥
+          </span>
+
+          <div>
+            <small>Hari ini</small>
+            <strong id="summaryToday">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <span class="summary-icon blue">
+            📅
+          </span>
+
+          <div>
+            <small>Terjadwal</small>
+            <strong id="summaryUpcoming">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <span class="summary-icon green">
+            ✓
+          </span>
+
+          <div>
+            <small>Selesai</small>
+            <strong id="summaryCompleted">0</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- NOTES -->
+      <section>
+
+        <div class="section-header">
+
+          <div>
+
+            <h3 id="sectionTitle">
+              Semua yang belum beres
+            </h3>
+
+            <p id="sectionDescription">
+              Semua hal yang lo titipin ke Life Inbox.
+            </p>
+
+          </div>
+
+          <span id="resultCount"></span>
+
+        </div>
+
+
+        <div id="notesContainer" class="notes-container">
+        </div>
+
+
+        <div id="emptyState" class="empty-state hidden">
+
+          <div class="empty-icon">
+            📭
+          </div>
+
+          <h3>
+            Belum ada apa-apa
+          </h3>
+
+          <p>
+            Kalau ada sesuatu yang takut lo lupa,
+            taruh aja di sini.
+          </p>
+
+          <button id="emptyAddButton">
+            ＋ Tambah sesuatu
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</div><!-- /#main-app -->
+
+
+
+  <!-- EDIT MODAL -->
+  <div id="modal" class="modal hidden">
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-box">
+
+      <div class="modal-header">
+
+        <h3>Edit catatan</h3>
+
+        <button id="closeModal">
+          ×
+        </button>
+
+      </div>
+
+
+      <textarea id="editText"></textarea>
+
+
+      <div class="modal-grid">
+
+        <select id="editCategory">
+
+          <option value="general">📌 Umum</option>
+          <option value="college">📚 Kuliah</option>
+          <option value="shopping">🛒 Belanja</option>
+          <option value="idea">💡 Ide</option>
+          <option value="personal">🧍 Personal</option>
+
+        </select>
+
+
+        <select id="editPriority">
+
+          <option value="low">Prioritas Rendah</option>
+          <option value="normal">Prioritas Normal</option>
+          <option value="high">🔥 Prioritas Tinggi</option>
+
+        </select>
+
+
+        <input
+          type="datetime-local"
+          id="editReminder"
+        >
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button id="cancelEdit" class="cancel-button">
+          Batal
+        </button>
+
+        <button id="saveEdit" class="save-button">
+          Simpan perubahan
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div id="toast" class="toast"></div>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>
