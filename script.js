@@ -1,4 +1,4 @@
-            const STORAGE_KEY = "lifeInbox_v2";
+const STORAGE_KEY = "lifeInbox_v2";
 
 let notes = JSON.parse(
   localStorage.getItem(STORAGE_KEY) || "[]"
@@ -220,6 +220,7 @@ function checkPinAction() {
           lockScreen.style.display = 'none';
           mainApp.style.display = 'block';
           render();
+          startReminderChecker();
         } else {
           // Jika konfirmasi salah, reset dari awal lagi
           showError("PIN tidak cocok! Silakan ulangi dari awal.");
@@ -236,6 +237,7 @@ function checkPinAction() {
         lockScreen.style.display = 'none';
         mainApp.style.display = 'block';
         render();
+        startReminderChecker();
       } else {
         showError("PIN Salah! Coba lagi.");
         resetInputFields();
@@ -1578,3 +1580,88 @@ function render() {
 
 // render() dipanggil setelah PIN benar (bukan saat load), supaya
 // tidak error karena #main-app masih display:none
+
+
+
+/* =========================
+   NOTIFIKASI
+========================= */
+
+// ID catatan yang sudah pernah dinotifikasi (biar tidak dobel)
+const notifiedIds = new Set(
+  JSON.parse(localStorage.getItem("notifiedIds") || "[]")
+);
+
+function saveNotifiedIds() {
+  localStorage.setItem(
+    "notifiedIds",
+    JSON.stringify([...notifiedIds])
+  );
+}
+
+// Minta izin notifikasi dari user
+function requestNotifPermission() {
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+}
+
+// Kirim satu notifikasi browser
+function sendNotification(note) {
+  if (Notification.permission !== "granted") return;
+
+  const categoryLabel = {
+    general:  "📌 Umum",
+    college:  "📚 Kuliah",
+    shopping: "🛒 Belanja",
+    idea:     "💡 Ide",
+    personal: "🧍 Personal"
+  };
+
+  const notif = new Notification("⏰ Life Inbox — Pengingat!", {
+    body: note.text,
+    tag:  note.id,
+    icon: "https://uelll-arch.github.io/life-inbox-uel/favicon.ico",
+    badge: "https://uelll-arch.github.io/life-inbox-uel/favicon.ico",
+    data: { id: note.id }
+  });
+
+  // Klik notifikasi → fokus ke tab
+  notif.onclick = () => {
+    window.focus();
+    notif.close();
+  };
+}
+
+// Cek semua catatan yang remindernya sudah lewat / tepat waktu
+function checkReminders() {
+  const now = new Date();
+
+  notes.forEach(note => {
+    if (!note.reminder || note.completed) return;
+    if (notifiedIds.has(note.id)) return;
+
+    const reminderTime = new Date(note.reminder);
+
+    // Trigger kalau waktunya sudah lewat (dalam rentang 5 menit ke belakang)
+    const diffMs = now - reminderTime;
+    if (diffMs >= 0 && diffMs <= 5 * 60 * 1000) {
+      sendNotification(note);
+      notifiedIds.add(note.id);
+      saveNotifiedIds();
+      showToast("🔔 Pengingat: " + note.text.substring(0, 40));
+    }
+  });
+}
+
+// Jalankan pengecekan setiap 30 detik
+function startReminderChecker() {
+  requestNotifPermission();
+  checkReminders();
+  setInterval(checkReminders, 30 * 1000);
+}
+
+// startReminderChecker() dipanggil langsung di dalam checkPinAction
+// tepat setelah mainApp.style.display = 'block' (lihat bagian PIN)
+//oke
