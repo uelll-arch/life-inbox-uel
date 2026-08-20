@@ -1,4 +1,6 @@
-const STORAGE_KEY = "lifeInbox_v2";
+
+Script · JS
+            const STORAGE_KEY = "lifeInbox_v2";
 
 let notes = JSON.parse(
   localStorage.getItem(STORAGE_KEY) || "[]"
